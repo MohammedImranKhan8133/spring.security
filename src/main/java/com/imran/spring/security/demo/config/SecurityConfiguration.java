@@ -1,5 +1,7 @@
 package com.imran.spring.security.demo.config;
 
+import com.imran.spring.security.demo.Security.ApplicationUserRole;
+import com.imran.spring.security.demo.entity.Student;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +11,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -20,6 +21,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/").permitAll()
+                .antMatchers("/student/*").hasRole(ApplicationUserRole.USER.name())
                 .anyRequest().authenticated().and().httpBasic();
     }
 
@@ -28,13 +30,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
         UserDetails user=User.builder()
                 .username("imran")
-                .password("imran")
-                .roles("employee").build();
+                .password(passwordEncoder().encode("user123"))
+                .roles(ApplicationUserRole.USER.name()).build();
+
+        UserDetails admin=User.builder()
+                .username("jaffer")
+                .password(passwordEncoder().encode("admin123"))
+                .roles(ApplicationUserRole.ADMIN.name()).build();
+
         return new InMemoryUserDetailsManager(user);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10);
+        return new BCryptPasswordEncoder();
     }
 }
