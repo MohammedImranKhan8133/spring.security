@@ -20,7 +20,13 @@ public class SecurityController {
     @GetMapping("/test")
     @ResponseBody
     public String firstpage(){
-        return "security Page";
+        return "security Page first";
+    }
+
+    @GetMapping("/test2")
+    @ResponseBody
+    public String secondpage(){
+        return "security Page second";
     }
 
      private static final List<Student> STUDENTS= Arrays.asList(
